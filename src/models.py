@@ -48,6 +48,15 @@ class Planets(db.Model):
 
     films: Mapped[List["Films"]] = relationship(secondary="film_planets", back_populates="planets")
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "climate": self.climate,
+            "terrain": self.terrain,
+            "population": self.population
+        }
+
 class People(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
@@ -55,6 +64,14 @@ class People(db.Model):
     homeworld: Mapped[str] = mapped_column(String(120), nullable=False)
 
     films: Mapped[List["Films"]] = relationship(secondary= "film_people", back_populates= "people")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "gender": self.gender,
+            "homeworld": self.homeworld
+        }
 
 class Films(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -81,5 +98,13 @@ class Favorite(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     content_type: Mapped[str] = mapped_column(String(50), nullable=False)  # "planet", "person", "film" 
     content_id: Mapped[int] = mapped_column(nullable=False)  # ID del planet, person o film
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,  
+            "content_type": self.content_type,
+            "content_id": self.content_id
+        }
 
     user = relationship("User", back_populates="favorites")
